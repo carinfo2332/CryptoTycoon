@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Crypto Miner Tycoon - Multiverse Edition</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #0b0e14;
+      color: #f0f6fc;
+      font-family: 'Rajdhani', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .settings-icon-btn {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      background: #161b22;
+      border: 2px solid #30363d;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      font-size: 18px;
+      color: #c9d1d9;
+      transition: all 0.2s;
+      z-index: 10;
+    }
+
+    .settings-icon-btn:hover {
+      border-color: #58a6ff;
+      color: #58a6ff;
+      transform: rotate(45deg);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      padding: 16px;
+    }
+
+    .modal-card {
+      background: #161b22;
+      border: 2px solid #30363d;
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+      text-align: center;
+    }
+
+    .modal-card.disclaimer-card {
+      border-color: #f85149;
+      box-shadow: 0 0 30px rgba(248, 81, 73, 0.3);
+    }
+
+    .modal-card.congrats-card {
+      border-color: #f7931a;
+      box-shadow: 0 0 30px rgba(247, 147, 26, 0.4);
+    }
+
+    .modal-title {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 12px;
+      color: #f7931a;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    .modal-card.disclaimer-card .modal-title {
+      color: #f85149;
+    }
+
+    .disclaimer-text {
+      font-size: 14px;
+      color: #c9d1d9;
+      line-height: 1.5;
+      text-align: left;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+
+    .disclaimer-checkbox-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      color: #8b949e;
+      text-align: left;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+
+    .disclaimer-checkbox-label input {
+      width: 18px;
+      height: 18px;
+      accent-color: #f7931a;
+      cursor: pointer;
+      margin-top: 2px;
+    }
+
+    .settings-section {
+      text-align: left;
+      margin-bottom: 20px;
+    }
+
+    .settings-label {
+      font-size: 13px;
+      color: #8b949e;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .lang-options {
+      display: flex;
+      gap: 10px;
+    }
+
+    .lang-btn {
+      flex: 1;
+      padding: 10px;
+      background: #0d1117;
+      border: 2px solid #30363d;
+      border-radius: 8px;
+      color: #c9d1d9;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .lang-btn.active {
+      border-color: #f7931a;
+      color: #f7931a;
+      background: rgba(247, 147, 26, 0.1);
+    }
+
+    .action-btn {
+      width: 100%;
+      background: #238636;
+      border: none;
+      color: #ffffff;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 10px;
+      padding: 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s, opacity 0.2s;
+    }
+
+    .action-btn:disabled {
+      background: #21262d;
+      color: #8b949e;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .action-btn.bottom-right-btn {
+      display: block;
+      margin-left: auto;
+      width: auto;
+      padding: 10px 20px;
+      background: #238636;
+    }
+
+    .header-panel {
+      width: 100%;
+      max-width: 480px;
+      background: linear-gradient(145deg, #161b22, #0d1117);
+      border: 2px solid #30363d;
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      margin-bottom: 16px;
+      margin-top: 12px;
+    }
+
+    .game-title {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 13px;
+      color: #f7931a;
+      text-shadow: 0 0 10px rgba(247, 147, 26, 0.4);
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+    }
+
+    .stat-box {
+      background: #090d13;
+      border: 1px solid #21262d;
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #8b949e;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .stat-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: #58a6ff;
+    }
+
+    .stat-value.btc {
+      color: #f7931a;
+    }
+
+    .rate-box {
+      font-size: 14px;
+      color: #3fb950;
+      font-weight: 700;
+    }
+
+    .clicker-container {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .btc-button {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffb347 0%, #f7931a 70%, #d47a00 100%);
+      border: 6px solid #ffe082;
+      box-shadow: 0 0 30px rgba(247, 147, 26, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.05s ease;
+      position: relative;
+    }
+
+    .btc-button:active {
+      transform: scale(0.92);
+    }
+
+    .btc-symbol {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 58px;
+      color: #ffffff;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+    }
+
+    .stage-tabs {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .stage-tab {
+      flex: 1;
+      padding: 8px 4px;
+      background: #161b22;
+      border: 2px solid #30363d;
+      border-radius: 10px;
+      color: #8b949e;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .stage-tab.active {
+      background: #21262d;
+      border-color: #f7931a;
+      color: #f7931a;
+      box-shadow: 0 0 12px rgba(247, 147, 26, 0.3);
+    }
+
+    .stage-tab.stage2-tab.active {
+      border-color: #a371f7;
+      color: #a371f7;
+      box-shadow: 0 0 12px rgba(163, 113, 247, 0.3);
+    }
+
+    .stage-tab.stage3-tab.active {
+      border-color: #f85149;
+      color: #f85149;
+      box-shadow: 0 0 12px rgba(248, 81, 73, 0.3);
+    }
+
+    .shop-title {
+      width: 100%;
+      max-width: 480px;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 11px;
+      color: #c9d1d9;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .shop-list {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .shop-item {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .shop-item.click-upgrade-item {
+      border-color: #238636;
+      background: linear-gradient(145deg, #161b22, #0e1e14);
+    }
+
+    .shop-item.click-upgrade-item:hover {
+      border-color: #3fb950;
+    }
+
+    .shop-item:hover {
+      background: #1c2128;
+      border-color: #58a6ff;
+    }
+
+    .shop-item.stage2-item:hover {
+      border-color: #a371f7;
+    }
+
+    .shop-item.stage3-item:hover {
+      border-color: #f85149;
+    }
+
+    .shop-item.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      border-color: #21262d;
+    }
+
+    .item-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .item-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #f0f6fc;
+    }
+
+    .item-rate {
+      font-size: 12px;
+      color: #3fb950;
+    }
+
+    .item-price {
+      font-size: 13px;
+      color: #f7931a;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .shop-item.stage2-item .item-price {
+      color: #a371f7;
+    }
+
+    .shop-item.stage3-item .item-price {
+      color: #f85149;
+    }
+
+    .item-badge {
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #58a6ff;
+    }
+
+    .reset-btn {
+      margin-top: 24px;
+      background: transparent;
+      border: 1px solid #f85149;
+      color: #f85149;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .reset-btn:hover {
+      background: rgba(248, 81, 73, 0.1);
+    }
+
+    .floating-text {
+      position: absolute;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 12px;
+      color: #3fb950;
+      pointer-events: none;
+      animation: floatUp 0.8s ease-out forwards;
+    }
+
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-40px); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="settings-icon-btn" onclick="openSettings()" title="Ayarlar / Settings">⚙️</div>
+
+  <!-- YASAL SORUMLULUK MODALI -->
+  <div class="modal-overlay" id="disclaimerModal" style="display: none;">
+    <div class="modal-card disclaimer-card">
+      <div class="modal-title" id="discTitle">⚠️ YASAL UYARI & BİLGİLENDİRME</div>
+      <div class="disclaimer-text" id="discText">
+        Bu oyun <strong>hiçbir şekilde gerçek Bitcoin veya kripto para alım-satımı içermez</strong>, gerçek para kazanma ya da kaybetme imkanı sunmaz. Tamamen simülasyon ve eğlence amaçlı hazırlanmış sanal bir oyundur.<br><br>
+        Oyunu oynayan her kullanıcı tüm sorumluluğu üstlenmiş sayılır. Bu koşullar kabul edildiği takdirde oyun ve yapımcısı doğabilecek hiçbir sorunu, talebi veya sorumluluğu üstlenmeyecektir.
+      </div>
+      <label class="disclaimer-checkbox-label">
+        <input type="checkbox" id="disclaimerCheck" onchange="toggleDisclaimerBtn()">
+        <span id="discCheckText">Yukarıdaki şartları okudum, anladım ve tüm sorumluluğu kabul ediyorum.</span>
+      </label>
+      <button class="action-btn" id="disclaimerBtn" disabled onclick="acceptDisclaimer()">KABUL ET VE OYUNA BAŞLA</button>
+    </div>
+  </div>
+
+  <!-- STAGE 2 TEBRİK MODALI -->
+  <div class="modal-overlay" id="stage2CongratsModal" style="display: none;">
+    <div class="modal-card congrats-card">
+      <div class="modal-title" id="stg2Title">🎉 TEBRİKLER!</div>
+      <div class="disclaimer-text" id="stg2Text">
+        Stage 2 Galaktik Madenciliğe geçtiniz! Artık evrenin derinliklerindeki enerjileri hasat edebilirsiniz.
+      </div>
+      <button class="action-btn bottom-right-btn" onclick="closeStage2Modal()" id="stg2Btn">DEVAM ET</button>
+    </div>
+  </div>
+
+  <!-- STAGE 3 TEBRİK MODALI -->
+  <div class="modal-overlay" id="stage3CongratsModal" style="display: none;">
+    <div class="modal-card congrats-card">
+      <div class="modal-title" id="stg3Title">🌌 TEBRİKLER! KOZMİK TANRI!</div>
+      <div class="disclaimer-text" id="stg3Text">
+        Stage 3 Kozmik Tanrı Madenciliğine geçtiniz! Gerçekliğin sınırlarını aşmaya ve boyutları madencilikle bükmeye hazırsınız.
+      </div>
+      <button class="action-btn bottom-right-btn" onclick="closeStage3Modal()" id="stg3Btn">DEVAM ET</button>
+    </div>
+  </div>
+
+  <!-- OYUN BİTİŞ / SON MAKİNE MODALI -->
+  <div class="modal-overlay" id="gameFinishModal" style="display: none;">
+    <div class="modal-card congrats-card">
+      <div class="modal-title" id="finishTitle">🏆 OYUNUMUZ BURADA BİTMİŞTİR!</div>
+      <div class="disclaimer-text" id="finishText">
+        Tebrikler! Oyunumuzdaki tüm makineleri satın alarak simülasyonun en üst noktasına ulaştınız. Desteğiniz için çok teşekkür ederiz!<br><br>
+        Oyunumuz hakkında görüşlerinizi Google Play Store'da yorum olarak paylaşmayı unutmayın!
+      </div>
+      <button class="action-btn" onclick="closeFinishModal()" id="finishBtn">DEVAM ETMEK İSTİYORUM</button>
+    </div>
+  </div>
+
+  <!-- AYARLAR MODALI -->
+  <div class="modal-overlay" id="settingsModal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-title" id="settingsTitle">⚙️ OYUN AYARLARI</div>
+      
+      <div class="settings-section">
+        <div class="settings-label" id="langLabel">Dil / Language</div>
+        <div class="lang-options">
+          <button class="lang-btn" id="langTrBtn" onclick="setLanguage('tr')">Türkçe</button>
+          <button class="lang-btn" id="langEnBtn" onclick="setLanguage('en')">English</button>
+        </div>
+      </div>
+
+      <button class="action-btn" id="saveSettingsBtn" onclick="closeSettings()">KAYDET VE KAPAT</button>
+    </div>
+  </div>
+
+  <div class="header-panel">
+    <div class="game-title">CRYPTO MINER TYCOON</div>
+    
+    <div class="stat-box">
+      <div class="stat-label" id="totalBalanceLabel">Toplam Bakiye</div>
+      <div class="stat-value btc"><span id="btcAmount">0.00000000</span> BTC</div>
+      <div style="font-size: 13px; color: #8b949e; margin-top: 2px;">
+        <span id="satoshiAmount">0</span> Satoshi
+      </div>
+    </div>
+
+    <div class="rate-box">
+      <span id="rateLabel">Hız</span>: +<span id="btcRate">0.00000000</span> BTC/sn
+    </div>
+  </div>
+
+  <div class="clicker-container">
+    <div class="btc-button" id="clickBtn">
+      <span class="btc-symbol">₿</span>
+    </div>
+  </div>
+
+  <div class="stage-tabs">
+    <div class="stage-tab active" id="tabStage1" onclick="switchStage(1)">
+      STAGE 1<br><span style="font-size: 7px; opacity: 0.8;" id="stage1Sub">Dünya & Uzay</span>
+    </div>
+    <div class="stage-tab stage2-tab" id="tabStage2" onclick="switchStage(2)">
+      STAGE 2<br><span style="font-size: 7px; opacity: 0.8;" id="stage2Sub">Galaktik</span>
+    </div>
+    <div class="stage-tab stage3-tab" id="tabStage3" onclick="switchStage(3)">
+      STAGE 3<br><span style="font-size: 7px; opacity: 0.8;" id="stage3Sub">Kozmik Tanrı</span>
+    </div>
+  </div>
+
+  <div class="shop-title">
+    <span id="shopTitleText">STAGE 1 MAĞAZASI</span>
+    <span style="font-size: 9px; color: #8b949e;">v1.2.0</span>
+  </div>
+
+  <div class="shop-list" id="shopList"></div>
+
+  <button class="reset-btn" id="resetBtn" onclick="resetGamePrompt()">Sıfırla ve Baştan Başla</button>
+
+  <script>
+    let bitcoins = 0;
+    let bitcoinRate = 0;
+    let currentStage = 1;
+    let clickLevel = 0;
+    let currentLang = localStorage.getItem("gameLang") || "tr";
+    
+    const priceMultiplier = 1.18;
+
+    const translations = {
+      tr: {
+        discTitle: "⚠️ YASAL UYARI & BİLGİLENDİRME",
+        discText: "Bu oyun <strong>hiçbir şekilde gerçek Bitcoin veya kripto para alım-satımı içermez</strong>, gerçek para kazanma ya da kaybetme imkanı sunmaz. Tamamen simülasyon ve eğlence amaçlı hazırlanmış sanal bir oyundur.<br><br>Oyunu oynayan her kullanıcı tüm sorumluluğu üstlenmiş sayılır. Bu koşullar kabul edildiği takdirde oyun ve yapımcısı doğabilecek hiçbir sorunu, talebi veya sorumluluğu üstlenmeyecektir.",
+        discCheckText: "Yukarıdaki şartları okudum, anladım ve tüm sorumluluğu kabul ediyorum.",
+        disclaimerBtn: "KABUL ET VE OYUNA BAŞLA",
+        settingsTitle: "⚙️ OYUN AYARLARI",
+        langLabel: "Dil / Language",
+        saveSettingsBtn: "KAYDET VE KAPAT",
+        totalBalanceLabel: "Toplam Bakiye",
+        rateLabel: "Hız",
+        stage1Sub: "Dünya & Uzay",
+        stage2Sub: "Galaktik",
+        stage3Sub: "Kozmik Tanrı",
+        shop1: "STAGE 1 MAĞAZASI",
+        shop2: "STAGE 2 MAĞAZASI",
+        shop3: "STAGE 3 KOZMİK MAĞAZA",
+        resetBtn: "Sıfırla ve Baştan Başla",
+        resetConfirm: "Tüm madencilik ilerlemeniz silinecek. Emin misiniz?",
+        clickUpgradeName: "⚡ Tıklama Gücü",
+        clickUpgradeRate: "Tıklama Başına Kazanç",
+        stg2Title: "🎉 TEBRİKLER!",
+        stg2Text: "Stage 2 Galaktik Madenciliğe geçtiniz! Artık evrenin derinliklerindeki enerjileri hasat edebilirsiniz.",
+        stg2Btn: "DEVAM ET",
+        stg3Title: "🌌 TEBRİKLER! KOZMİK TANRI!",
+        stg3Text: "Stage 3 Kozmik Tanrı Madenciliğine geçtiniz! Gerçekliğin sınırlarını aşmaya ve boyutları madencilikle bükmeye hazırsınız.",
+        stg3Btn: "DEVAM ET",
+        finishTitle: "🏆 OYUNUMUZ BURADA BİTMİŞTİR!",
+        finishText: "Tebrikler! Oyunumuzdaki tüm makineleri satın alarak simülasyonun en üst noktasına ulaştınız. Desteğiniz için çok teşekkür ederiz!<br><br>Oyunumuz hakkında görüşlerinizi Google Play Store'da yorum olarak paylaşmayı unutmayın!",
+        finishBtn: "DEVAM ETMEK İSTİYORUM",
+        items: {
+          item_oldCalculator: { name: "Eski Hesap Makinesi" },
+          item_oldCpu: { name: "Eski İşlemci" },
+          item_oldComputerFromGrandpa: { name: "Dededen Kalma PC" },
+          item_rapsberrypy: { name: "Raspberry Pi" },
+          item_smartphone: { name: "Akıllı Telefon" },
+          item_middleClassPC: { name: "Orta Segment PC" },
+          item_cheapServer: { name: "Ucuz Sunucu" },
+          item_gamingPC: { name: "Oyuncu Bilgisayarı" },
+          item_cheapMiner: { name: "ASIC Madenci" },
+          item_highEndUltraPC: { name: "Canavar Oyun Rigi" },
+          item_bigMiner: { name: "Dev Madenci Çiftliği" },
+          item_miningFarm: { name: "Konteyner Madencilik" },
+          item_nasaPC: { name: "NASA Süper Bilgisayarı" },
+          item_quantumRig: { name: "Kuantum Madenci" },
+          item_miningFarmSpace: { name: "Uzay İstasyonu Rigi" },
+          item_miningFarmMoon: { name: "Ay Üssü Madencisi" },
+          item_bitcoinTimeMachine: { name: "Zaman Makinesi" },
+          item_blackHolePoweredMiner: { name: "Karadeliğe Bağlı Miner" },
+          item_s2_dysonSwarm: { name: "Dyson Küresi Türbini" },
+          item_s2_wormholeCore: { name: "Solucan Deliği Çekirdeği" },
+          item_s2_darkMatterExtractor: { name: "Karanlık Madde Süzücü" },
+          item_s2_galaxyCoreEngine: { name: "Galaksi Çekirdek Rigi" },
+          item_s2_parallelUniverseLink: { name: "Paralel Evren Bağlantısı" },
+          item_s2_timeLoopMiner: { name: "Sonsuz Zaman Döngüsü Rigi" },
+          item_s2_multiverseServer: { name: "Çoklu Evren Sunucu Odası" },
+          item_s2_bigBangRecreator: { name: "Big Bang Jeneratörü" },
+          item_s2_realityBender: { name: "Gerçeklik Bükücü Madenci" },
+          item_s2_godAlgorithm: { name: "Sonsuzluk Algoritması" },
+          item_s3_superstringEngine: { name: "Süper Sicim Madencisi" },
+          item_s3_voidHarvester: { name: "Hiçlik Boşluğu Biçerdöveri" },
+          item_s3_entropyReverser: { name: "Entropi Ters Çevirici" },
+          item_s3_omegaMatrix: { name: "Omega Boyut Matriksi" },
+          item_s3_godForge: { name: "Tanrısal Evren Ocağı" },
+          item_s3_chronosManipulator: { name: "Kronos Zaman Süzücü" },
+          item_s3_hypercubeArray: { name: "Hiperküp Madencilik Dizisi" },
+          item_s3_antimatterReactor: { name: "Kozmik Anti-Madde Reaktörü" },
+          item_s3_transcendentMind: { name: "Aşkın Zihin Ağı" },
+          item_s3_creatorKey: { name: "Sonsuz Yaratıcı Anahtarı" }
+        }
+      },
+      en: {
+        discTitle: "⚠️ LEGAL DISCLAIMER & NOTICE",
+        discText: "This game <strong>does not involve any real Bitcoin or cryptocurrency trading</strong>, and offers no opportunity to win or lose real money. It is a virtual simulation created strictly for entertainment purposes.<br><br>Every player assumes full responsibility. By accepting these terms, the game and its developer will not assume any liability, claims, or responsibility.",
+        discCheckText: "I have read, understood, and accept all the terms above.",
+        disclaimerBtn: "ACCEPT AND START GAME",
+        settingsTitle: "⚙️ GAME SETTINGS",
+        langLabel: "Language / Dil",
+        saveSettingsBtn: "SAVE AND CLOSE",
+        totalBalanceLabel: "Total Balance",
+        rateLabel: "Rate",
+        stage1Sub: "Earth & Space",
+        stage2Sub: "Galactic",
+        stage3Sub: "Cosmic God",
+        shop1: "STAGE 1 SHOP",
+        shop2: "STAGE 2 SHOP",
+        shop3: "STAGE 3 COSMIC SHOP",
+        resetBtn: "Reset & Start Over",
+        resetConfirm: "All mining progress will be erased. Are you sure?",
+        clickUpgradeName: "⚡ Click Power",
+        clickUpgradeRate: "Earnings Per Click",
+        stg2Title: "🎉 CONGRATULATIONS!",
+        stg2Text: "You have unlocked Stage 2 Galactic Mining! You can now harvest deep space energy.",
+        stg2Btn: "CONTINUE",
+        stg3Title: "🌌 CONGRATULATIONS! COSMIC GOD!",
+        stg3Text: "You have unlocked Stage 3 Cosmic God Mining! You are ready to transcend reality and bend dimensions.",
+        stg3Btn: "CONTINUE",
+        finishTitle: "🏆 YOU HAVE COMPLETED THE GAME!",
+        finishText: "Congratulations! You have purchased every machine in our game and reached the ultimate peak of simulation. Thank you so much for playing!<br><br>Please don't forget to leave your feedback and review on Google Play Store!",
+        finishBtn: "I WANT TO KEEP PLAYING",
+        items: {
+          item_oldCalculator: { name: "Old Calculator" },
+          item_oldCpu: { name: "Old CPU" },
+          item_oldComputerFromGrandpa: { name: "Grandpa's PC" },
+          item_rapsberrypy: { name: "Raspberry Pi" },
+          item_smartphone: { name: "Smartphone" },
+          item_middleClassPC: { name: "Middle-Class PC" },
+          item_cheapServer: { name: "Cheap Server" },
+          item_gamingPC: { name: "Gaming PC" },
+          item_cheapMiner: { name: "ASIC Miner" },
+          item_highEndUltraPC: { name: "Monster Gaming Rig" },
+          item_bigMiner: { name: "Big Mining Farm" },
+          item_miningFarm: { name: "Container Mining" },
+          item_nasaPC: { name: "NASA Supercomputer" },
+          item_quantumRig: { name: "Quantum Miner" },
+          item_miningFarmSpace: { name: "Space Station Rig" },
+          item_miningFarmMoon: { name: "Moon Base Miner" },
+          item_bitcoinTimeMachine: { name: "Time Machine" },
+          item_blackHolePoweredMiner: { name: "Black Hole Miner" },
+          item_s2_dysonSwarm: { name: "Dyson Swarm Turbine" },
+          item_s2_wormholeCore: { name: "Wormhole Core" },
+          item_s2_darkMatterExtractor: { name: "Dark Matter Extractor" },
+          item_s2_galaxyCoreEngine: { name: "Galaxy Core Rig" },
+          item_s2_parallelUniverseLink: { name: "Parallel Universe Link" },
+          item_s2_timeLoopMiner: { name: "Time Loop Rig" },
+          item_s2_multiverseServer: { name: "Multiverse Server Room" },
+          item_s2_bigBangRecreator: { name: "Big Bang Generator" },
+          item_s2_realityBender: { name: "Reality Bender Miner" },
+          item_s2_godAlgorithm: { name: "Infinity Algorithm" },
+          item_s3_superstringEngine: { name: "Superstring Miner" },
+          item_s3_voidHarvester: { name: "Void Harvester" },
+          item_s3_entropyReverser: { name: "Entropy Reverser" },
+          item_s3_omegaMatrix: { name: "Omega Dimension Matrix" },
+          item_s3_godForge: { name: "Divine Universe Forge" },
+          item_s3_chronosManipulator: { name: "Chronos Time Sift" },
+          item_s3_hypercubeArray: { name: "Hypercube Mining Array" },
+          item_s3_antimatterReactor: { name: "Cosmic Antimatter Reactor" },
+          item_s3_transcendentMind: { name: "Transcendent Mind Net" },
+          item_s3_creatorKey: { name: "Infinite Creator Key" }
+        }
+      }
+    };
+
+    function t(key) {
+      return translations[currentLang][key] || key;
+    }
+
+    function tItem(id) {
+      return translations[currentLang].items[id] ? translations[currentLang].items[id].name : id;
+    }
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem("gameLang", lang);
+      
+      document.getElementById("langTrBtn").classList.toggle("active", lang === "tr");
+      document.getElementById("langEnBtn").classList.toggle("active", lang === "en");
+      
+      updateTexts();
+      initShop();
+      updateUI();
+    }
+
+    function updateTexts() {
+      document.getElementById("discTitle").innerHTML = t("discTitle");
+      document.getElementById("discText").innerHTML = t("discText");
+      document.getElementById("discCheckText").innerText = t("discCheckText");
+      document.getElementById("disclaimerBtn").innerText = t("disclaimerBtn");
+      document.getElementById("settingsTitle").innerText = t("settingsTitle");
+      document.getElementById("langLabel").innerText = t("langLabel");
+      document.getElementById("saveSettingsBtn").innerText = t("saveSettingsBtn");
+      document.getElementById("totalBalanceLabel").innerText = t("totalBalanceLabel");
+      document.getElementById("rateLabel").innerText = t("rateLabel");
+      document.getElementById("stage1Sub").innerText = t("stage1Sub");
+      document.getElementById("stage2Sub").innerText = t("stage2Sub");
+      document.getElementById("stage3Sub").innerText = t("stage3Sub");
+      document.getElementById("resetBtn").innerText = t("resetBtn");
+
+      document.getElementById("stg2Title").innerText = t("stg2Title");
+      document.getElementById("stg2Text").innerText = t("stg2Text");
+      document.getElementById("stg2Btn").innerText = t("stg2Btn");
+
+      document.getElementById("stg3Title").innerText = t("stg3Title");
+      document.getElementById("stg3Text").innerText = t("stg3Text");
+      document.getElementById("stg3Btn").innerText = t("stg3Btn");
+
+      document.getElementById("finishTitle").innerText = t("finishTitle");
+      document.getElementById("finishText").innerHTML = t("finishText");
+      document.getElementById("finishBtn").innerText = t("finishBtn");
+
+      if (currentStage === 1) document.getElementById("shopTitleText").innerText = t("shop1");
+      else if (currentStage === 2) document.getElementById("shopTitleText").innerText = t("shop2");
+      else document.getElementById("shopTitleText").innerText = t("shop3");
+    }
+
+    function openSettings() {
+      document.getElementById("settingsModal").style.display = "flex";
+      document.getElementById("langTrBtn").classList.toggle("active", currentLang === "tr");
+      document.getElementById("langEnBtn").classList.toggle("active", currentLang === "en");
+    }
+
+    function closeSettings() {
+      document.getElementById("settingsModal").style.display = "none";
+    }
+
+    function checkDisclaimer() {
+      const accepted = localStorage.getItem("disclaimerAccepted");
+      if (!accepted) {
+        document.getElementById("disclaimerModal").style.display = "flex";
+      }
+    }
+
+    function toggleDisclaimerBtn() {
+      const isChecked = document.getElementById("disclaimerCheck").checked;
+      document.getElementById("disclaimerBtn").disabled = !isChecked;
+    }
+
+    function acceptDisclaimer() {
+      localStorage.setItem("disclaimerAccepted", "true");
+      document.getElementById("disclaimerModal").style.display = "none";
+    }
+
+    function closeStage2Modal() {
+      document.getElementById("stage2CongratsModal").style.display = "none";
+    }
+
+    function closeStage3Modal() {
+      document.getElementById("stage3CongratsModal").style.display = "none";
+    }
+
+    function closeFinishModal() {
+      document.getElementById("gameFinishModal").style.display = "none";
+    }
+
+    const itemsStage1 = [
+      { id: "item_oldCalculator", basePrice: 0.0000001, rate: 0.00000001 },
+      { id: "item_oldCpu", basePrice: 0.00000125, rate: 0.0000001 },
+      { id: "item_oldComputerFromGrandpa", basePrice: 0.00003, rate: 0.0000025 },
+      { id: "item_rapsberrypy", basePrice: 0.00005, rate: 0.000005 },
+      { id: "item_smartphone", basePrice: 0.0005, rate: 0.000005 },
+      { id: "item_middleClassPC", basePrice: 0.0015, rate: 0.00015 },
+      { id: "item_cheapServer", basePrice: 0.004, rate: 0.0004 },
+      { id: "item_gamingPC", basePrice: 0.015, rate: 0.0015 },
+      { id: "item_cheapMiner", basePrice: 0.05, rate: 0.005 },
+      { id: "item_highEndUltraPC", basePrice: 0.15, rate: 0.015 },
+      { id: "item_bigMiner", basePrice: 1.5, rate: 0.15 },
+      { id: "item_miningFarm", basePrice: 25, rate: 2.5 },
+      { id: "item_nasaPC", basePrice: 500, rate: 50 },
+      { id: "item_quantumRig", basePrice: 12000, rate: 1200 },
+      { id: "item_miningFarmSpace", basePrice: 350000, rate: 35000 },
+      { id: "item_miningFarmMoon", basePrice: 9500000, rate: 950000 },
+      { id: "item_bitcoinTimeMachine", basePrice: 250000000, rate: 25000000 },
+      { id: "item_blackHolePoweredMiner", basePrice: 75000000000, rate: 7500000000 }
+    ];
+
+    const itemsStage2 = [
+      { id: "item_s2_dysonSwarm", basePrice: 15e12, rate: 1.5e12 },
+      { id: "item_s2_wormholeCore", basePrice: 350e12, rate: 35e12 },
+      { id: "item_s2_darkMatterExtractor", basePrice: 9.5e15, rate: 0.95e15 },
+      { id: "item_s2_galaxyCoreEngine", basePrice: 250e15, rate: 25e15 },
+      { id: "item_s2_parallelUniverseLink", basePrice: 7.5e18, rate: 0.75e18 },
+      { id: "item_s2_timeLoopMiner", basePrice: 200e18, rate: 20e18 },
+      { id: "item_s2_multiverseServer", basePrice: 8.5e21, rate: 0.85e21 },
+      { id: "item_s2_bigBangRecreator", basePrice: 350e21, rate: 35e21 },
+      { id: "item_s2_realityBender", basePrice: 15e24, rate: 1.5e24 },
+      { id: "item_s2_godAlgorithm", basePrice: 999e24, rate: 99.9e24 }
+    ];
+
+    const itemsStage3 = [
+      { id: "item_s3_superstringEngine", basePrice: 120e27, rate: 12e27 },
+      { id: "item_s3_voidHarvester", basePrice: 3.5e30, rate: 0.35e30 },
+      { id: "item_s3_entropyReverser", basePrice: 85e30, rate: 8.5e30 },
+      { id: "item_s3_omegaMatrix", basePrice: 1.8e33, rate: 0.18e33 },
+      { id: "item_s3_godForge", basePrice: 50e33, rate: 5e33 },
+      { id: "item_s3_chronosManipulator", basePrice: 12e36, rate: 0.12e36 },
+      { id: "item_s3_hypercubeArray", basePrice: 180e36, rate: 4.5e36 },
+      { id: "item_s3_antimatterReactor", basePrice: 5e39, rate: 0.15e39 },
+      { id: "item_s3_transcendentMind", basePrice: 450e39, rate: 8e39 },
+      { id: "item_s3_creatorKey", basePrice: 19.999e42, rate: 0.1e42 }
+    ];
+
+    function getAllItems() {
+      return [...itemsStage1, ...itemsStage2, ...itemsStage3];
+    }
+
+    function loadGame() {
+      const savedBtc = localStorage.getItem("bitcoins");
+      if (savedBtc !== null) {
+        bitcoins = parseFloat(savedBtc) || 0;
+      }
+      
+      const savedClickLvl = localStorage.getItem("clickLevel");
+      if (savedClickLvl !== null) {
+        clickLevel = parseInt(savedClickLvl) || 0;
+      }
+
+      let calculatedRate = 0;
+      getAllItems().forEach(item => {
+        const amount = parseInt(localStorage.getItem(item.id)) || 0;
+        calculatedRate += amount * item.rate;
+      });
+      bitcoinRate = calculatedRate;
+    }
+
+    function saveGame() {
+      localStorage.setItem("bitcoins", bitcoins.toString());
+      localStorage.setItem("clickLevel", clickLevel.toString());
+    }
+
+    const UNITS_LIST = [
+      { limit: 1e100, name: "Googol" },
+      { limit: 1e99, name: "Duotrigintillion" },
+      { limit: 1e96, name: "Untrigintillion" },
+      { limit: 1e93, name: "Trigintillion" },
+      { limit: 1e90, name: "Novemvigintillion" },
+      { limit: 1e87, name: "Octovigintillion" },
+      { limit: 1e84, name: "Septenvigintillion" },
+      { limit: 1e81, name: "Sexvigintillion" },
+      { limit: 1e78, name: "Quinquavigintillion" },
+      { limit: 1e75, name: "Quattuorvigintillion" },
+      { limit: 1e72, name: "Trevigintillion" },
+      { limit: 1e69, name: "Duovigintillion" },
+      { limit: 1e66, name: "Unvigintillion" },
+      { limit: 1e63, name: "Vigintillion" },
+      { limit: 1e60, name: "Novemdecillion" },
+      { limit: 1e57, name: "Octodecillion" },
+      { limit: 1e54, name: "Septendecillion" },
+      { limit: 1e51, name: "Sexdecillion" },
+      { limit: 1e48, name: "Quindecillion" },
+      { limit: 1e45, name: "Quattuordecillion" },
+      { limit: 1e42, name: "Tredecillion" },
+      { limit: 1e39, name: "Duodecillion" },
+      { limit: 1e36, name: "Undecillion" },
+      { limit: 1e33, name: "Decillion" },
+      { limit: 1e30, name: "Nonillion" },
+      { limit: 1e27, name: "Octillion" },
+      { limit: 1e24, name: "Septillion" },
+      { limit: 1e21, name: "Sextillion" },
+      { limit: 1e18, name: "Quintillion" },
+      { limit: 1e15, name: "Quadrillion" },
+      { limit: 1e12, name: "Trillion" },
+      { limit: 1e9,  name: "Billion" },
+      { limit: 1e6,  name: "Million" }
+    ];
+
+    function formatBTC(val) {
+      for (let i = 0; i < UNITS_LIST.length; i++) {
+        if (val >= UNITS_LIST[i].limit) {
+          let scaled = val / UNITS_LIST[i].limit;
+          return scaled.toFixed(2) + " " + UNITS_LIST[i].name;
+        }
+      }
+
+      if (val >= 1000) return (val / 1000).toFixed(2) + " K";
+      if (val >= 1) return val.toFixed(4);
+      return val.toFixed(8);
+    }
+
+    function formatSatoshi(satVal) {
+      const satUnits = [
+        ...UNITS_LIST.filter(u => u.limit >= 1e18),
+        { limit: 1e15, name: "Q" },
+        { limit: 1e12, name: "T" },
+        { limit: 1e9,  name: "B" },
+        { limit: 1e6,  name: "M" },
+        { limit: 1e3,  name: "K" }
+      ];
+
+      for (let i = 0; i < satUnits.length; i++) {
+        if (satVal >= satUnits[i].limit) {
+          let scaled = satVal / satUnits[i].limit;
+          return scaled.toFixed(2) + " " + satUnits[i].name;
+        }
+      }
+
+      return Math.floor(satVal).toLocaleString();
+    }
+
+    function getItemPrice(item) {
+      const amount = parseInt(localStorage.getItem(item.id)) || 0;
+      return item.basePrice * Math.pow(priceMultiplier, amount);
+    }
+
+    // YENİ TIKLAMA GÜCÜ (1, 2, 4, 8, 12, 16, 32, 64, 128 -> x1.5 -> x1.5 -> x2...)
+    function getClickPower() {
+      const predefined = [1, 2, 4, 8, 12, 16, 32, 64, 128];
+      if (clickLevel < predefined.length) {
+        return predefined[clickLevel];
+      }
+      
+      let val = 128;
+      for (let i = predefined.length; i <= clickLevel; i++) {
+        let step = (i - predefined.length) % 3;
+        if (step === 0) val = Math.floor(val * 1.5);
+        else if (step === 1) val = Math.floor(val * 1.5);
+        else if (step === 2) val = Math.floor(val * 2.0);
+      }
+      return val;
+    }
+
+    // Fiyat deminki gibi 55 Satoshi başlangıçlı ve 1.9 kat artacak şekilde sabit kaldı
+    function getClickUpgradePrice() {
+      const baseClickPrice = 0.00000055; 
+      return baseClickPrice * Math.pow(1.9, clickLevel); 
+    }
+
+    function switchStage(stageNum) {
+      currentStage = stageNum;
+      
+      document.getElementById("tabStage1").classList.toggle("active", stageNum === 1);
+      document.getElementById("tabStage2").classList.toggle("active", stageNum === 2);
+      document.getElementById("tabStage3").classList.toggle("active", stageNum === 3);
+      
+      if (stageNum === 1) document.getElementById("shopTitleText").innerText = t("shop1");
+      else if (stageNum === 2) document.getElementById("shopTitleText").innerText = t("shop2");
+      else document.getElementById("shopTitleText").innerText = t("shop3");
+
+      initShop();
+      updateUI();
+    }
+
+    function updateUI() {
+      document.getElementById("btcAmount").innerText = formatBTC(bitcoins);
+      document.getElementById("satoshiAmount").innerText = formatSatoshi(bitcoins * 1e8);
+      document.getElementById("btcRate").innerText = formatBTC(bitcoinRate);
+
+      const clickPriceEl = document.getElementById("click-upgrade-price");
+      const clickCountEl = document.getElementById("click-upgrade-count");
+      const clickCardEl = document.getElementById("click-upgrade-card");
+
+      if (clickPriceEl && clickCountEl && clickCardEl) {
+        const clickPrice = getClickUpgradePrice();
+        clickPriceEl.innerText = formatBTC(clickPrice) + " BTC";
+        clickCountEl.innerText = "Lvl " + (clickLevel + 1);
+
+        if (bitcoins >= clickPrice) {
+          clickCardEl.classList.remove("disabled");
+        } else {
+          clickCardEl.classList.add("disabled");
+        }
+      }
+
+      let activeItems = itemsStage1;
+      if (currentStage === 2) activeItems = itemsStage2;
+      if (currentStage === 3) activeItems = itemsStage3;
+
+      activeItems.forEach(item => {
+        const amount = parseInt(localStorage.getItem(item.id)) || 0;
+        const currentPrice = getItemPrice(item);
+        
+        const priceEl = document.getElementById(`price-${item.id}`);
+        const countEl = document.getElementById(`count-${item.id}`);
+        const cardEl = document.getElementById(`card-${item.id}`);
+
+        if (priceEl && countEl && cardEl) {
+          priceEl.innerText = formatBTC(currentPrice) + " BTC";
+          countEl.innerText = amount;
+
+          if (bitcoins >= currentPrice) {
+            cardEl.classList.remove("disabled");
+          } else {
+            cardEl.classList.add("disabled");
+          }
+        }
+      });
+    }
+
+    function initShop() {
+      const shopList = document.getElementById("shopList");
+      shopList.innerHTML = "";
+
+      const clickCard = document.createElement("div");
+      clickCard.className = "shop-item click-upgrade-item";
+      clickCard.id = "click-upgrade-card";
+      clickCard.innerHTML = `
+        <div class="item-info">
+          <div class="item-name">${t("clickUpgradeName")}</div>
+          <div class="item-rate">${t("clickUpgradeRate")}: +${getClickPower()} Sat</div>
+          <div class="item-price" id="click-upgrade-price">0.00000000 BTC</div>
+        </div>
+        <div class="item-badge" id="click-upgrade-count">Lvl 1</div>
+      `;
+      clickCard.addEventListener("click", buyClickUpgrade);
+      shopList.appendChild(clickCard);
+
+      let activeItems = itemsStage1;
+      if (currentStage === 2) activeItems = itemsStage2;
+      if (currentStage === 3) activeItems = itemsStage3;
+
+      activeItems.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "shop-item";
+        if (currentStage === 2) card.classList.add("stage2-item");
+        if (currentStage === 3) card.classList.add("stage3-item");
+        card.id = `card-${item.id}`;
+
+        card.innerHTML = `
+          <div class="item-info">
+            <div class="item-name">${tItem(item.id)}</div>
+            <div class="item-rate">+${formatBTC(item.rate)} BTC/sn</div>
+            <div class="item-price" id="price-${item.id}">0.00000000 BTC</div>
+          </div>
+          <div class="item-badge" id="count-${item.id}">0</div>
+        `;
+
+        card.addEventListener("click", () => buyItem(item));
+        shopList.appendChild(card);
+      });
+    }
+
+    function buyClickUpgrade() {
+      const price = getClickUpgradePrice();
+      if (bitcoins >= price) {
+        bitcoins -= price;
+        clickLevel += 1;
+        saveGame();
+        initShop();
+        updateUI();
+      }
+    }
+
+    function buyItem(item) {
+      const price = getItemPrice(item);
+      if (bitcoins >= price) {
+        bitcoins -= price;
+        const currentAmount = parseInt(localStorage.getItem(item.id)) || 0;
+        localStorage.setItem(item.id, (currentAmount + 1).toString());
+        
+        bitcoinRate += item.rate;
+        saveGame();
+        updateUI();
+
+        if (item.id === "item_s2_dysonSwarm" && currentAmount === 0) {
+          if (!localStorage.getItem("seenStage2Modal")) {
+            localStorage.setItem("seenStage2Modal", "true");
+            document.getElementById("stage2CongratsModal").style.display = "flex";
+          }
+        }
+
+        if (item.id === "item_s3_superstringEngine" && currentAmount === 0) {
+          if (!localStorage.getItem("seenStage3Modal")) {
+            localStorage.setItem("seenStage3Modal", "true");
+            document.getElementById("stage3CongratsModal").style.display = "flex";
+          }
+        }
+
+        if (item.id === "item_s3_creatorKey" && currentAmount === 0) {
+          if (!localStorage.getItem("seenFinishModal")) {
+            localStorage.setItem("seenFinishModal", "true");
+            document.getElementById("gameFinishModal").style.display = "flex";
+          }
+        }
+      }
+    }
+
+    const clickBtn = document.getElementById("clickBtn");
+    clickBtn.addEventListener("click", (e) => {
+      const currentPower = getClickPower();
+      bitcoins += currentPower * 0.00000001;
+      saveGame();
+      updateUI();
+
+      const floatEl = document.createElement("div");
+      floatEl.className = "floating-text";
+      floatEl.innerText = `+${currentPower} Sat`;
+      
+      const rect = clickBtn.getBoundingClientRect();
+      const x = e.clientX - rect.left - 20;
+      const y = e.clientY - rect.top - 20;
+      
+      floatEl.style.left = `${x}px`;
+      floatEl.style.top = `${y}px`;
+      
+      clickBtn.appendChild(floatEl);
+      setTimeout(() => floatEl.remove(), 800);
+    });
+
+    setInterval(() => {
+      if (bitcoinRate > 0) {
+        bitcoins += bitcoinRate;
+        saveGame();
+        updateUI();
+      }
+    }, 1000);
+
+    function resetGamePrompt() {
+      if (confirm(t("resetConfirm"))) {
+        localStorage.clear();
+        bitcoins = 0;
+        bitcoinRate = 0;
+        clickLevel = 0;
+        currentLang = "tr";
+        switchStage(1);
+        checkDisclaimer();
+      }
+    }
+
+    setLanguage(currentLang);
+    checkDisclaimer();
+    loadGame();
+    initShop();
+    updateUI();
+  </script>
+</body>
+</html>
